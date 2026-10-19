@@ -1,19 +1,39 @@
 package uk.ac.westminster.products_api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-     import org.springframework.web.bind.annotation.GetMapping;
-     import org.springframework.web.bind.annotation.PathVariable;
-     import org.springframework.web.bind.annotation.RequestMapping;
-     import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
-    @RestController
-    @RequestMapping("/products")
-    public class productController {
+@RestController
+@RequestMapping("/products")
 
-        @GetMapping("/{id}")
-        public product getById(@PathVariable Long id){
-            return new product(id,"Laptop",999.99);
-        }
+public class productController {
+    @Autowired
+    private ProductService ProductService;
+
+    @GetMapping()
+    public List<product> getAllProducts() {
+        return ProductService.getAllProducts();
     }
 
+    @GetMapping("/{id}")
+    public product getProductById(@PathVariable Long id) {
+        return ProductService.getProductById(id).orElse(null);
+    }
 
+    @PostMapping()
+    public product addProduct(@RequestBody product product) {
+        return ProductService.addProduct(product);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id) {
+        ProductService.deleteProduct(id);
+    }
+
+    @GetMapping("/search")
+    public List<product> search(@RequestParam String name) {
+        return ProductService.findByName(name);
+    }
+}
